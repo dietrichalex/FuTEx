@@ -6,14 +6,6 @@ X = load('norm2D.txt');
 X = X';
 mu = mean(X);
 Sigma = cov(X);
-figure;
-scatter(X(:,1), X(:,2), 15, 'filled', 'MarkerFaceAlpha', 0.6);
-title('Punktwolke');
-xlabel('X1');
-ylabel('X2');
-axis equal;
-grid on;
-
 
 std_devs = sqrt(diag(Sigma));
 range_multiplier = 3.5;
@@ -51,5 +43,6 @@ plot(mu(1), mu(2), 'rx', 'MarkerSize', 14, 'LineWidth', 2);
 hold off;
 axis equal;
 grid on;
+title('Punktwolke');
 xlabel('X1');
 ylabel('X2');
