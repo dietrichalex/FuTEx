@@ -29,14 +29,18 @@ NIS_Hist = zeros(1,HIST_SIZE);      % NIS - history
 P95_NEES_val = chi2inv(0.95, 4);
 P95_NIS_val = chi2inv(0.95, 2);
 
-F = [1 0 T 0; 
-     0 1 0 T; 
-     0 0 1 0; 
-     0 0 0 1];
+F = [1 0 T 0 (1/2 * T^2) 0; 
+     0 1 0 T 0 (1/2 * T^2); 
+     0 0 1 0 T 0; 
+     0 0 0 1 0 T;
+     0 0 0 0 1 0;
+     0 0 0 0 0 1;];
+
+
 
 % Measurement matrix (H)
-H = [1 0 0 0; 
-     0 1 0 0]; 
+H = [1 0 0 0 0 0; 
+     0 1 0 0 0 0]; 
 
 % Measurement noise covariance (R)
 R = [1^2 0; 
@@ -44,10 +48,16 @@ R = [1^2 0;
 
 % Process noise covariance (Q)
 q_val = 50;
-Q_base = [0.25*T^4 0 0.5*T^3 0; 
-          0 0.25*T^4 0 0.5*T^3; 
-          0.5*T^3 0 T^2 0; 
-          0 0.5*T^3 0 T^2];
+% Q_base = [0.25*T^4 0 0.5*T^3 0; 
+%           0 0.25*T^4 0 0.5*T^3; 
+%           0.5*T^3 0 T^2 0; 
+%           0 0.5*T^3 0 T^2];
+Q_base =  [T^5/20,  0,       T^4/8,   0,       T^3/6,   0;
+             0,       T^5/20,  0,       T^4/8,   0,       T^3/6;
+             T^4/8,   0,       T^3/3,   0,       T^2/2,   0;
+             0,       T^4/8,   0,       T^3/3,   0,       T^2/2;
+             T^3/6,   0,       T^2/2,   0,       T,       0;
+             0,       T^3/6,   0,       T^2/2,   0,       T      ];
 Q = q_val * Q_base; 
 
 I_state = eye(size(F,1)); 
@@ -79,8 +89,8 @@ while (1)
 
   % filter initialization (once per simulation)  
   if (isempty(x_est))   
-    x_est = [z(1); z(2); 0; 0];
-    P_est = diag([R(1,1), R(2,2), 10000, 10000]); 
+    x_est = [z(1); z(2); 0; 0; 0; 0];
+    P_est = diag([R(1,1), R(2,2), 10000, 10000, 0, 0]); 
     
     if k_cycle <= 500
         P_diag_Hist_T3(:, k_cycle) = diag(P_est);
